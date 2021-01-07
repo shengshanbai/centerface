@@ -54,6 +54,7 @@ def main(args):
             face_keys = np.stack(item["face_keys"], axis=0)
             face_blurs = np.array(item["blur"], dtype=np.float32)
             with train_lmdb.begin(write=True) as txn:
+                txn.put("fname_{}".format(index).encode(),item["image_fname"].encode())
                 txn.put("image_{}".format(index).encode(), image_content)
                 txn.put("has_face_{}".format(index).encode(), np.array(has_face, dtype=np.bool))
                 txn.put("blurs_{}".format(index).encode(), face_blurs)
@@ -62,6 +63,7 @@ def main(args):
         else:
             has_face = False
             with train_lmdb.begin(write=True) as txn:
+                txn.put("fname_{}".format(index).encode(), item["image_fname"].encode())
                 txn.put("image_{}".format(index).encode(), image_content)
                 txn.put("has_face_{}".format(index).encode(), np.array(has_face, dtype=np.bool))
         if index % 100 == 0:
@@ -83,12 +85,14 @@ def main(args):
             has_face = True
             face_boxes = np.stack(item["face_boxes"], axis=0)
             with val_lmdb.begin(write=True) as txn:
+                txn.put("fname_{}".format(index).encode(), item["image_fname"].encode())
                 txn.put("image_{}".format(index).encode(), image_content)
                 txn.put("has_face_{}".format(index).encode(), np.array(has_face, dtype=np.bool))
                 txn.put("face_boxes_{}".format(index).encode(), face_boxes)
         else:
             has_face = False
             with val_lmdb.begin(write=True) as txn:
+                txn.put("fname_{}".format(index).encode(), item["image_fname"].encode())
                 txn.put("image_{}".format(index).encode(), image_content)
                 txn.put("has_face_{}".format(index).encode(), np.array(has_face, dtype=np.bool))
         if index % 100 == 0:
