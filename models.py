@@ -219,7 +219,7 @@ class CenterFaceNet(nn.Module):
                     nn.Conv2d(feature_channel, 1,
                               kernel_size=1, stride=1,
                               padding=0, bias=True),
-                    nn.ReLU(inplace=True)
+                    nn.Sigmoid()
                 )
         self.center_off_conv=nn.Conv2d(feature_channel, 2,
                               kernel_size=1, stride=1,

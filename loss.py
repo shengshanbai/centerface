@@ -6,6 +6,7 @@ import math
 class FocalLoss(nn.Module):
     def __init__(self):
         super().__init__()
+        self.ESP=1e-12
 
     def forward(self, pred, target):
         pos_inds = target.eq(1)
@@ -13,9 +14,8 @@ class FocalLoss(nn.Module):
         neg_weights = torch.pow(1 - target, 4)
 
         loss = 0
-        pred=torch.clamp(pred,1e-7,0.9999)
-        pos_loss = torch.log(pred) * torch.pow(1 - pred, 2) * pos_inds
-        neg_loss = torch.log(1 - pred) * torch.pow(pred, 2) * neg_weights * neg_inds
+        pos_loss = torch.log(pred+self.ESP) * torch.pow(1 - pred, 2) * pos_inds
+        neg_loss = torch.log(1 - pred+self.ESP) * torch.pow(pred, 2) * neg_weights * neg_inds
 
         num_pos = pos_inds.sum()
         pos_loss = pos_loss.sum()
